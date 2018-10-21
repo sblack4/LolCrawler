@@ -26,8 +26,10 @@ class Riot:
 
     def badStatus(self, response: Response) -> bool:
         status_code = response.status_code
-        if status_code == 429:
+        if status_code == 429:  # Rate Limit
             return True
+        elif status_code == 403:
+            raise Exception('YOUR AUTH TOKEN EXPIRED! Response 403: ' + response.text)
         return False
 
     def getUrl(self, endpoint: str, arg: Union[str, int]) -> str:

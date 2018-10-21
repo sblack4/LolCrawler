@@ -7,6 +7,7 @@ from utils import write_json, get_participant_wins, getSomething
 from loldb import Loldb
 from time import sleep
 from typing import Dict, List, Tuple
+from math import inf
 
 
 class LolCrawler:
@@ -14,7 +15,6 @@ class LolCrawler:
     def __init__(self, api_key: str, dbname="lolcrawler.db"):
         fileConfig("logging.conf")
         self.logger: Logger = logging.getLogger("root")
-
         self.logger.debug("--- debugging ---")
 
         self.riot = Riot(api_key)
@@ -65,33 +65,31 @@ class LolCrawler:
             except Exception as ex:
                 self.logger.warning(ex)
 
-    def crawl(self, seed_player_id: int) -> None:
+    def crawl_player(self, seed_player_id: int) -> None:
         if self.db.in_matchlists(seed_player_id):
             return
         match_list = self.riot.getMatchList(seed_player_id)
-        write_json(match_list, str(seed_player_id) + "-match-list.json")
         self.iterate_matchlist(match_list)
         # update table of matchlists
         cmd = "insert into matchlists values ({})".format(seed_player_id)
         self.db.execute(cmd)
 
+    def crawl(self, seed_player_id: int, iterations: int=inf) -> None:
+        self.crawl_player(seed_player_id)
+        counter = 0
+        while counter < iterations:
+            counter += 1
+            command = "select accountId from participants ORDER BY RANDOM() LIMIT 1"
+            self.db.curr.execute(command)
+            new_player = self.db.curr.fetchone()[0]
+            self.crawl_player(new_player)
+
 
 
 if __name__ == "__main__":
-    riot_key = "RGAPI-eb49c30b-3d29-4160-a19a-3ab744f48aa0"
+    riot_key = "RGAPI-aa4df822-5310-4608-a56f-8d8a955b3729"
     seed_player = 50068799  # "Faker"
     db_name = "lolcrawler.db"
 
-    lolcrawler = LolCrawler(riot_key)
+    lolcrawler = LolCrawler(api_key=riot_key, dbname=db_name)
     lolcrawler.crawl(seed_player)
-    while True:
-        conn = sqlite3.connect(db_name)
-        curr = conn.cursor()
-        command = "select accountId from participants ORDER BY RANDOM() LIMIT 1"
-        curr.execute(command)
-        new_player = curr.fetchone()[0]
-        curr.close()
-        conn.close()
-
-        lolcrawler = LolCrawler(riot_key)
-        lolcrawler.crawl(new_player)
