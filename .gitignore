@@ -1,5 +1,4 @@
 
-*.json
 *.log
 __pycache__
 .idea
