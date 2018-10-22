@@ -21,7 +21,8 @@ class Riot:
             "matches": "/lol/match/v3/matches",
             "summoners/by-name": "/lol/summoner/v3/summoners/by-name",
             "matchlist": "/lol/match/v3/matchlists/by-account",
-            "featuredMatches": "/lol/spectator/v3/featured-games"
+            "featuredMatches": "/lol/spectator/v3/featured-games",
+            "timeline": "/lol/match/v3/timelines/by-match"
         }
 
     def badStatus(self, response: Response) -> bool:
@@ -67,6 +68,18 @@ class Riot:
             return self.getFeaturedMatches()
         return response.json()
 
+    def getRoute(self, route: str, arg: str="") -> json:
+        arg = "/" + str(arg) if arg else ""
+        url = self.url_base + self.routes[route] + arg + self.api_arg
+        response = requests.get(url)
+        if self.badStatus(response):
+            sleep(60)
+            return self.getRoute(route)
+        return response.json()
+
+    def getTimeline(self, match_id: int) -> json:
+        route = "timeline"
+        return self.getRoute(route=route, arg=str(match_id))
 
 if __name__ == "__main__":
     key = "RGAPI-eb49c30b-3d29-4160-a19a-3ab744f48aa0"
