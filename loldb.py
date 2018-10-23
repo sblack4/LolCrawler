@@ -109,8 +109,8 @@ class Loldb(object):
 
     def get_random_participant(self) -> int:
         command = "select accountId from participants ORDER BY RANDOM() LIMIT 1"
-        self.db.curr.execute(command)
-        new_player = self.db.curr.fetchone()[0]
+        self.curr.execute(command)
+        new_player = self.curr.fetchone()[0]
         return new_player
 
     def in_matchlists(self, accountId: int) -> bool:
