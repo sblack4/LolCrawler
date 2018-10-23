@@ -26,6 +26,7 @@ class LolCrawler:
         self.player_wins = dict()
 
         self.db = Loldb(dbname)
+        self.db.create_participantdb()
 
     def insert_timeline(self, timeline: dict) -> None:
         elements = ['creepsPerMinDeltas', 'xpPerMinDeltas', 'goldPerMinDeltas', 'damageTakenPerMinDeltas']

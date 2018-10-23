@@ -11,25 +11,40 @@ from math import inf
 
 
 class LolCrawler:
+    """
+    order of operations:
+        crawl() ->
+            crawl_player() { get matchlist for player } ->
+                iterate_matchlist() { get each match } ->
+                    handle_match() { abstract, you should handle participants and everything here }
+    """
 
     def __init__(self, api_key: str, dbname="lolcrawler.db"):
         fileConfig("logging.conf")
         self.logger: Logger = logging.getLogger("root")
         self.logger.debug("--- debugging ---")
+
         self.get_participant_wins = get_participant_wins
         self.riot = Riot(api_key)
 
         self.player_wins = dict()
+        self.db_name = dbname
+        self.api_key = api_key
 
         self.db = Loldb(dbname)
+        self.after_init_hook()
 
-    def handle_participants(self, match: Dict) -> None:
-        self.player_wins = self.get_participant_wins(match)
-        participantIdentities = match['participantIdentities']
-        self.db.insert_participants(participantIdentities)
+    def after_init_hook(self):
+        pass
 
     def handle_match(self, match_id: int) -> None:
         pass
+
+    def handle_participants(self, match: Dict) -> None:
+        """gets player wins and insert identities into participants table"""
+        self.player_wins = self.get_participant_wins(match)
+        participantIdentities = match['participantIdentities']
+        self.db.insert_participants(participantIdentities)
 
     def iterate_matchlist(self, match_list: Dict) -> None:
         match_list = match_list['matches']

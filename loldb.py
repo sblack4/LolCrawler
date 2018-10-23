@@ -4,13 +4,18 @@ import logging
 from typing import Dict, Union
 
 
-class Loldb:
+class Loldb(object):
     def __init__(self, dbname="lolcrawler.db"):
         self.logger = logging.getLogger("lolcrawler")
 
         self.conn = sqlite3.connect(dbname)
         self.curr = self.conn.cursor()
+        self.after_init_hook()
 
+    def after_init_hook(self):
+        pass
+
+    def create_participantdb(self):
         self.create_participant_table()
         self.create_timeline_table()
         self.create_matches_table()
@@ -42,8 +47,7 @@ class Loldb:
                    "        	`pname`	text,"
                    "        	`platform`	text,"
                    "        	`accountId`	int UNIQUE,"
-                   "        	`summonerId`	int,"
-                   "        	`matchlists`	INTEGER"
+                   "        	`summonerId`	int"
                    "        );"
                    "        ")
         self.curr.execute(command)
