@@ -1,5 +1,5 @@
 
--- get vals
+-- get timeseries data for a match
 SELECT 
 	P.summonerName, 
 	PF.timestamp, 
@@ -19,4 +19,22 @@ FROM MatchDto M
 	LEFT OUTER JOIN TeamStatsDto TS ON M.gameId = TS.gameId 
 		AND PR.teamId = TS.teamId
 WHERE M.gameId = 2761581064
-ORDER BY PF.timestamp, PF.participantId ASC 
+ORDER BY PF.timestamp, PF.participantId ASC;
+
+
+-- gold difference data 
+select l.gameId, l.timestamp, w.WinnerTotal, l.LoserTotal,
+WinnerTotal - LoserTotal GoldDifference
+from (select gameId, 
+		timestamp, TotalGold LoserTotal
+		from goldOverTime
+		where win = 'Fail') as l
+	left outer join (
+		select gameId, timestamp, TotalGold WinnerTotal
+		from goldOverTime
+		where win = 'Win') as w 
+on l.timestamp = w.timestamp 
+and l.gameId = w.gameId 
+--where l.gameId = 2761581064
+order by l.gameId, l.timestamp asc;
+

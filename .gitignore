@@ -1,7 +1,16 @@
 
+# log files
 *.out
 *.log
+
+# python
 __pycache__
+.ipynb_checkpoints
+
+# IDEs
 .idea
 .vscode
+
+
+# DB
 *-journal

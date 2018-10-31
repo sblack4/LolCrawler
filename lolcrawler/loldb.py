@@ -1,3 +1,7 @@
+"""
+facade over the database
+and has some logic to do database stuff
+"""
 import sqlite3
 from logging import Logger
 from sqlite3 import IntegrityError
@@ -13,10 +17,6 @@ class Loldb(object):
 
         self.conn = sqlite3.connect(dbname)
         self.curr = self.conn.cursor()
-        self.after_init_hook()
-
-    def after_init_hook(self):
-        pass
 
     def close(self) -> None:
         self.logger.info("--- closing db curr and conn ---")

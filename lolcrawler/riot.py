@@ -11,6 +11,10 @@ class RateLimitException(Exception):
 
 
 class Riot:
+    """
+    this class makes it easy to call the riot api
+    and handles the rate limit exceptions when you call too often
+    """
     routes: Dict[str, str]
 
     def __init__(self, api_key):
@@ -26,6 +30,12 @@ class Riot:
         }
 
     def badStatus(self, response: Response) -> bool:
+        """
+        returns true if the rate limit has been hit
+        otherwise it returns false
+        :param response:
+        :return:
+        """
         status_code = response.status_code
         if status_code == 429:  # Rate Limit
             return True
