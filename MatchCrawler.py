@@ -45,7 +45,8 @@ class MatchCrawler(LolCrawler):
             try:
                 # use quotes because they are text values in the database
                 datum = "'" + str(match[col]) + "'"
-            except:
+            except Exception as ex:
+                self.logger.warning(ex)
                 # if it's missing an error gets thrown so mark it as null
                 datum = "'null'"
             # add that datum to the list
@@ -147,7 +148,8 @@ class MatchCrawler(LolCrawler):
             for col in cols:
                 try:
                     datum = "'{}'".format(participant[col])
-                except:
+                except Exception as ex:
+                    self.logger.warning(ex)
                     datum = "'null'"
                 data.append(datum)
             cmd = start_cmd + ", ".join(data) + ")"
@@ -182,7 +184,8 @@ class MatchCrawler(LolCrawler):
         for col in cols:
             try:
                 datum = "'" + str(player[col]) + "'"
-            except:
+            except Exception as ex:
+                self.logger.warning(ex)
                 datum = "'null"
             data.append(datum)
         # make it into one command and insert into the database
@@ -230,7 +233,8 @@ class MatchCrawler(LolCrawler):
             for col in cols:
                 try:
                     datum = pframe[col]
-                except:
+                except Exception as ex:
+                    self.logger.warning(ex)
                     datum = 'null'
                 data.append(datum)
             # finally make one command and insert it
@@ -245,9 +249,6 @@ class MatchCrawler(LolCrawler):
         :return:
         """
         cols = [
-            "timestamp",
-            "x",
-            "y",
             "killerId",
             "victimId",
             "participantId",
@@ -256,13 +257,22 @@ class MatchCrawler(LolCrawler):
         # events is a list so there will be a new row for each
         for event in events:
             cmd = "INSERT INTO Events VALUES ("
-            cmd += str(gameId)
-            cmd += ", '" + event['type'] + "', "
+            cmd += str(gameId) + ", '"
+            cmd += event['type'] + "', '"
+            cmd += str(event['timestamp']) + "', "
             data = []
+            try:
+                data.append(event['position']['x'])
+                data.append(event['position']['y'])
+            except Exception as ex:
+                self.logger.warning(ex)
+                data.append('null')
+                data.append('null')
             for col in cols:
                 try:
                     datum = event[col]
-                except:
+                except Exception as ex:
+                    self.logger.warning(ex)
                     datum = 'null'
                 data.append(datum)
             cmd += ", ".join([str(d) for d in data]) + ")"
@@ -341,7 +351,7 @@ class MatchCrawler(LolCrawler):
 if __name__ == "__main__":
     # this gets called when you run this file
 
-    riot_key = "RGAPI-8a656aec-4c0d-47dd-9c37-ce52288b6f14"
+    riot_key = "RGAPI-6887f965-e159-4456-b94b-764d35346d9b"
     seed_player = 50068799  # "Faker"
 
     # in the data folder
@@ -350,3 +360,6 @@ if __name__ == "__main__":
     # create matchcrawler object and start crawling
     matchcrawler = MatchCrawler(api_key=riot_key, dbname=db_name)
     matchcrawler.crawl(seed_player)
+
+
+
