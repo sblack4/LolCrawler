@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-nohup python MatchCrawler > logger.log 2>&1 &
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+cd ${DIR}
+cd ..
+
+nohup python MatchCrawler.py > logger.log 2>&1 &
