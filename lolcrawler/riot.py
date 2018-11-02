@@ -3,7 +3,10 @@ import requests
 from requests import Response
 from time import sleep
 from typing import Union, Dict
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 class RateLimitException(Exception):
     """basic exception """
@@ -37,10 +40,14 @@ class Riot:
         :return:
         """
         status_code = response.status_code
-        if status_code == 429:  # Rate Limit
+        if status_code == 200:
+            return False
+        elif status_code == 429:  # Rate Limit
             return True
         elif status_code == 403:
             raise Exception('YOUR AUTH TOKEN EXPIRED! Response 403: ' + response.text)
+        else:
+            logger.warning("Status code error:{} ".format(status_code), response)
         return False
 
     def getUrl(self, endpoint: str, arg: Union[str, int]) -> str:
