@@ -83,10 +83,15 @@ class LolCrawler:
         if self.db.in_matchlists(seed_player_id):
             return
         match_list = self.riot.getMatchList(seed_player_id)
-        self.iterate_matchlist(match_list)
-        # update table of matchlists
-        cmd = "insert into matchlists values ({})".format(seed_player_id)
-        self.db.execute(cmd)
+        try:
+            self.iterate_matchlist(match_list)
+            # update table of matchlists
+            cmd = "insert into matchlists values ({})".format(seed_player_id)
+            self.db.execute(cmd)
+        except Exception as ex:
+            self.logger.exception(ex)
+            self.logger.debug("offending Matchlist: {}".format(match_list))
+
 
     def crawl(self, seed_player_id: int, iterations: int=inf) -> None:
         """

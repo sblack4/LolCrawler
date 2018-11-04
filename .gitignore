@@ -1,4 +1,7 @@
 
+# big files (git-lfs)
+data/lolmatch.db
+
 # log files
 *.out
 *.log

@@ -351,7 +351,7 @@ class MatchCrawler(LolCrawler):
 if __name__ == "__main__":
     # this gets called when you run this file
 
-    riot_key = "RGAPI-6887f965-e159-4456-b94b-764d35346d9b"
+    riot_key = "RGAPI-edefd6ca-2c91-4f60-bdfd-94b5de163061"
     seed_player = 50068799  # "Faker"
 
     # in the data folder

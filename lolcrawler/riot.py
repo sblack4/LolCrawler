@@ -42,7 +42,10 @@ class Riot:
         status_code = response.status_code
         if status_code == 200:
             return False
-        elif status_code == 429:  # Rate Limit
+        else:
+            logger.warning("Response Status ".format(str(status_code)), response)
+
+        if status_code == 429:  # Rate Limit
             return True
         elif status_code == 403:
             raise Exception('YOUR AUTH TOKEN EXPIRED! Response 403: ' + response.text)
